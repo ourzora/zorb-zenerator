@@ -4,7 +4,7 @@ import {useCallback, useEffect, useState} from "react";
 
 export default function Home() {
 
-  const [ gradient, setGradient] = useState()
+  const [ gradient, setGradient] = useState('')
   const router = useRouter()
 
   const rgbToCss = useCallback((rgbArray) => {
@@ -12,9 +12,16 @@ export default function Home() {
   }, [])
 
   useEffect(() => {
+
+    if(!router.query.image){
+      return
+    }
+
     async function fetchGradient(){
       const resp = await fetch(`/api/sampler?image=${router.query.image}`)
       const { palette } = await resp.json()
+
+      console.log("R: ", resp)
 
       const cssGradient = `radial-gradient(75.29% 75.29% at 64.96% 24.36%, ${rgbToCss(palette.LightVibrant.rgb)} 14.06%, ${rgbToCss(palette.Vibrant.rgb)} 57.81%, ${rgbToCss(palette.DarkVibrant.rgb)} 99.48%)`
 
@@ -22,9 +29,8 @@ export default function Home() {
     }
 
     fetchGradient().then()
-  }, [])
+  }, [router])
 
-  console.log("G: ", gradient)
 
   return (
     <div className={styles.container}>
